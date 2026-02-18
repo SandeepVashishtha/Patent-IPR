@@ -2,47 +2,46 @@
 import Link from "next/link";
 import { useState } from "react";
 
+const navLinks = ["Home", "Services", "Platform", "Pricing", "Contact"];
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1">
-          <span className="font-black text-[#0d1b2a] text-lg tracking-tight">
-            PATENT
-            <span className="text-[#f5a623]">-IPR</span>
-          </span>
-        </Link>
+        <div className="flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[#0d1b2a] text-2xl">verified_user</span>
+          <span className="text-base font-extrabold tracking-tight text-[#0d1b2a]">PATENT<span className="text-[#C5A059]">-IPR</span></span>
+        </div>
 
         {/* Desktop Nav */}
-        <ul className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-widest text-[#0d1b2a] uppercase">
-          {["Home", "Services", "Platform", "Pricing", "Contact"].map((item) => (
-            <li key={item}>
-              <Link href={`#${item.toLowerCase()}`} className="hover:text-[#f5a623] transition-colors">
-                {item}
-              </Link>
-            </li>
+        <nav className="hidden lg:flex items-center gap-10">
+          {navLinks.map((item) => (
+            <Link
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="text-xs font-semibold text-[#0d1b2a] uppercase tracking-widest hover:text-[#f5a623] transition-colors"
+            >
+              {item}
+            </Link>
           ))}
-        </ul>
+        </nav>
 
         {/* CTA Buttons */}
-        <div className="hidden md:flex items-center gap-3">
-          <Link href="#contact" className="text-sm font-medium text-[#0d1b2a] hover:text-[#f5a623] transition-colors">
+        <div className="hidden lg:flex items-center gap-3">
+          <button className="text-sm font-medium text-[#0d1b2a] px-4 py-2 hover:text-[#f5a623] transition-colors">
             Log In
-          </Link>
-          <Link
-            href="#contact"
-            className="bg-[#0d1b2a] text-white text-sm font-semibold px-5 py-2 rounded-md hover:bg-[#1a2f4a] transition-colors"
-          >
+          </button>
+          <button className="bg-[#0d1b2a] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#1a2f4a] transition-colors">
             Get Started
-          </Link>
+          </button>
         </div>
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden p-2"
+          className="lg:hidden p-2"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -54,26 +53,25 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 flex flex-col gap-4">
-          {["Home", "Services", "Platform", "Pricing", "Contact"].map((item) => (
+        <div className="lg:hidden bg-white border-t border-gray-200 px-8 py-5 flex flex-col gap-4">
+          {navLinks.map((item) => (
             <Link
               key={item}
               href={`#${item.toLowerCase()}`}
-              className="text-sm font-semibold uppercase tracking-widest text-[#0d1b2a] hover:text-[#f5a623]"
+              className="text-xs font-semibold uppercase tracking-widest text-[#0d1b2a] hover:text-[#f5a623] transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {item}
             </Link>
           ))}
-          <Link
-            href="#contact"
-            className="bg-[#0d1b2a] text-white text-sm font-semibold px-5 py-2 rounded-md text-center"
+          <button
+            className="bg-[#0d1b2a] text-white px-5 py-2.5 rounded-lg text-sm font-semibold text-center"
             onClick={() => setMenuOpen(false)}
           >
             Get Started
-          </Link>
+          </button>
         </div>
       )}
-    </nav>
+    </header>
   );
 }

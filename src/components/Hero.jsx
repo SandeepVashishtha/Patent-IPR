@@ -4,34 +4,34 @@ export default function Hero() {
   return (
     <section
       id="home"
-      className="pt-28 pb-20 bg-white overflow-hidden"
+      className="pt-8 pb-20 bg-white overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
         {/* Left */}
         <div>
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5 mb-8">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5 mb-4">
+            <span className="w-2 h-2 rounded-full bg-[#c5a059] animate-pulse" />
             <span className="text-xs font-semibold uppercase tracking-widest text-[#0d1b2a]">
               Now Monitoring 700+ Assets
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-black text-[#0d1b2a] leading-tight mb-6">
+          <h1 className="text-5xl md:text-6xl font-black text-[#0d1b2a] leading-tight mb-2">
             Protect Your <br />
             Innovation with{" "}
-            <span className="text-[#f5a623]">Smart IP</span>
+            <span className="text-[#C5A059]">Smart IP</span>
             <br />
             Management
           </h1>
 
-          <p className="text-gray-500 text-base leading-relaxed mb-10 max-w-md">
+          <p className="text-gray-500 text-base leading-relaxed mb-4 max-w-md">
             End-to-end Patent, Trademark &amp; IP Filing with real-time case
             tracking. Join 1,000+ companies managing their intellectual assets
             globally.
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 mb-12">
+          <div className="flex flex-wrap items-center gap-4 mb-8">
             <Link
               href="#contact"
               className="inline-flex items-center gap-2 border-2 border-[#0d1b2a] text-[#0d1b2a] font-semibold px-6 py-3 rounded-md hover:bg-[#0d1b2a] hover:text-white transition-all"
