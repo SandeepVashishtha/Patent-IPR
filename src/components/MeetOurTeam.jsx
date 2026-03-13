@@ -1,84 +1,20 @@
 "use client";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 const team = [
   {
-    initials: "RK",
-    name: "Rajiv Khanna",
-    title: "Managing Partner",
-    specialization: "Patents & IP Strategy",
-    bg: "bg-[#0d1b2a]",
-    accentColor: "text-[#f5a623]",
-    badge: "20+ yrs Experience",
-    badgeBg: "bg-[#f5a623]/10 text-[#c5870a]",
-    bio: "Former Senior Examiner at the Indian Patent Office. Led 300+ patent grants across biotech, software, and mechanical engineering sectors globally.",
-    tags: ["Patent Prosecution", "PCT Filings", "IP Valuation"],
-    linkedin: "#",
-  },
-  {
-    initials: "SM",
-    name: "Sophia Marchetti",
-    title: "Lead Trademark Attorney",
-    specialization: "Trademark & Brand Protection",
-    bg: "bg-[#4a7c59]",
-    accentColor: "text-white",
-    badge: "Madrid Expert",
+    photo: "/sartajvir-singh.png",
+    name: "Dr. Sartajvir Singh",
+    title: "Chief Scientific Officer - SEnSRS, IIT Ropar",
+    specialization: "Registered IPR Professional",
+    bg: "bg-[#7a5f12]",
+    accentColor: "text-[#f8d98a]",
+    badge: "Patent Agent IN/PA 5806",
     badgeBg: "bg-white/20 text-white",
-    bio: "Specializes in international trademark prosecution under the Madrid Protocol. Managed brand portfolios for Fortune 500 companies across 80+ jurisdictions.",
-    tags: ["Madrid Protocol", "Brand Strategy", "Opposition Proceedings"],
-    linkedin: "#",
-  },
-  {
-    initials: "AN",
-    name: "Arjun Nair",
-    title: "Patent Counsel — Deep Tech",
-    specialization: "AI, Software & Semiconductor",
-    bg: "bg-[#1a3a5c]",
-    accentColor: "text-[#f5a623]",
-    badge: "Silicon Valley Trained",
-    badgeBg: "bg-[#f5a623]/10 text-[#c5870a]",
-    bio: "Expert in patent strategies for software-defined products and AI systems. Previously at Google's IP team and a founding patent counsel for two unicorn startups.",
-    tags: ["AI Patents", "Software IP", "Freedom to Operate"],
-    linkedin: "#",
-  },
-  {
-    initials: "PT",
-    name: "Dr. Preethi Thomas",
-    title: "Pharma & Biotech IP Lead",
-    specialization: "Life Sciences & Biotechnology",
-    bg: "bg-purple-700",
-    accentColor: "text-white",
-    badge: "PhD Biochemistry",
-    badgeBg: "bg-white/20 text-white",
-    bio: "PhD in Biochemistry with 15 years of patent prosecution experience in pharmaceuticals and medical devices. Secured 120+ biotech patents worldwide.",
-    tags: ["Biotech Patents", "Drug Formulations", "Clinical Trials IP"],
-    linkedin: "#",
-  },
-  {
-    initials: "KS",
-    name: "Kavya Singh",
-    title: "Design & Copyright Specialist",
-    specialization: "Industrial Design & Copyright",
-    bg: "bg-rose-600",
-    accentColor: "text-white",
-    badge: "EU Design Lead",
-    badgeBg: "bg-white/20 text-white",
-    bio: "Handles design rights across the EU, US, and India. Expert in copyright law for software, architecture, and creative works. Secured 200+ design registrations.",
-    tags: ["Design Registration", "Copyright Law", "Creative Works"],
-    linkedin: "#",
-  },
-  {
-    initials: "ML",
-    name: "Michael Lau",
-    title: "IP Litigation & Enforcement",
-    specialization: "Dispute Resolution & Licensing",
-    bg: "bg-slate-700",
-    accentColor: "text-[#f5a623]",
-    badge: "ITC & Federal Courts",
-    badgeBg: "bg-[#f5a623]/10 text-[#c5870a]",
-    bio: "Veteran IP litigator with 18 years at the ITC and US Federal Courts. Specializes in enforcement strategies, licensing negotiations, and infringement defense.",
-    tags: ["IP Litigation", "Licensing", "Infringement Defense"],
-    linkedin: "#",
+    bio: "Dr. Sartajvir Singh is an academician and researcher at IIT Ropar with expertise in IPR practice, remote sensing, and computing technologies. He has filed 75 innovations/patents, with 35 granted/awarded.",
+    tags: ["75+ Patent Filings", "35+ Grants", "100+ Publications"],
+    linkedin: "https://www.linkedin.com/in/sartajvir/",
   },
 ];
 
@@ -111,11 +47,15 @@ function TeamCard({ member, index }) {
       {/* Card top strip */}
       <div className={`${member.bg} px-6 pt-8 pb-6`}>
         <div className="flex items-start justify-between mb-5">
-          {/* Avatar */}
-          <div className="w-16 h-16 rounded-2xl bg-white/20 border-2 border-white/30 flex items-center justify-center text-white text-xl font-black">
-            {member.initials}
+          <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 bg-white/20">
+            <Image
+              src={member.photo}
+              alt={member.name}
+              width={64}
+              height={64}
+              className="w-full h-full object-cover"
+            />
           </div>
-          {/* Badge */}
           <span
             className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${member.badgeBg}`}
           >
@@ -193,21 +133,20 @@ export default function MeetOurTeam() {
           <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5 mb-4">
             <span className="w-2 h-2 rounded-full bg-[#f5a623] animate-pulse" />
             <span className="text-xs font-semibold uppercase tracking-widest text-[#0d1b2a]">
-              Our Experts
+              Featured Expert
             </span>
           </div>
           <h2 className="text-4xl font-black text-[#0d1b2a] mb-4">
-            Meet Our IP Legal Team
+            Meet Our IP Expert
           </h2>
           <p className="text-gray-500 text-base max-w-xl mx-auto leading-relaxed">
-            A multidisciplinary team of patent attorneys, trademark specialists,
-            and IP strategists with decades of combined experience across
-            technology, pharma, and creative sectors.
+            Real profile details of Dr. Sartajvir Singh, supporting clients with
+            patent filing, prosecution, and innovation advisory.
           </p>
         </div>
 
         {/* Team grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 max-w-md mx-auto">
           {team.map((member, i) => (
             <TeamCard key={member.name} member={member} index={i} />
           ))}
