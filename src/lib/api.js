@@ -1162,6 +1162,314 @@ export async function updateAdminFilingStatus(filingId = "", status = "", adminN
   return updateAdminPatentFilingStatus(filingId, status, adminNote);
 }
 
+// ─── Client Profile ───────────────────────────────────────────────────────────
+// GET /api/client/profile
+export async function getClientProfile() {
+  const response = await apiRequest("/api/client/profile", { method: "GET" });
+  if (!response.ok) {
+    const stored = getStoredUser();
+    if (stored) return { ok: true, profile: stored, status: 200, data: stored };
+    return { ok: false, profile: null, status: response.status, data: response.data };
+  }
+
+  const raw = response.data?.data || response.data || {};
+  return {
+    ok: true,
+    profile: {
+      id: raw.id || "",
+      name: raw.name || "",
+      email: raw.email || "",
+      role: raw.role || "CLIENT",
+      created_at: raw.created_at || raw.createdAt || null,
+    },
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// PATCH /api/client/profile
+export async function updateClientProfile({ name, email } = {}) {
+  const body = {};
+  if (name !== undefined && name !== null) body.name = name;
+  if (email !== undefined && email !== null) body.email = email;
+  if (!Object.keys(body).length) {
+    return { ok: false, status: 400, data: { message: "At least one field required." } };
+  }
+  const response = await apiRequest("/api/client/profile", { method: "PATCH", body });
+  return { ok: response.ok, status: response.status, data: response.data };
+}
+
+// PATCH /api/client/profile/change-password
+export async function changeClientPassword({ currentPassword, newPassword } = {}) {
+  if (!currentPassword || !newPassword) {
+    return { ok: false, status: 400, data: { message: "currentPassword and newPassword are required." } };
+  }
+  const response = await apiRequest("/api/client/profile/change-password", {
+    method: "PATCH",
+    body: { currentPassword, newPassword },
+  });
+  return { ok: response.ok, status: response.status, data: response.data };
+}
+
+// POST /api/client/forgot-password
+export async function clientForgotPassword({ email, newPassword } = {}) {
+  if (!email || !newPassword) {
+    return { ok: false, status: 400, data: { message: "email and newPassword are required." } };
+  }
+  const response = await apiRequest("/api/client/forgot-password", {
+    method: "POST",
+    body: { email, newPassword },
+    withAuth: false,
+  });
+  return { ok: response.ok, status: response.status, data: response.data };
+}
+
+// ─── Client Patent Filings ────────────────────────────────────────────────────
+function normalizeClientPatentFiling(item = {}) {
+  const agent = item.agent || item.assignedAgent || {};
+  return {
+    id: item.id || item.filingId || item.patentId || "",
+    referenceNumber: item.referenceNumber || item.referenceNo || item.reference_number || item.ref || "",
+    title: item.title || item.name || "",
+    status: item.status || item.patentStatus || item.patent_status || "",
+    estimation: item.estimation ?? null,
+    adminNote: item.adminNote || item.admin_note || "",
+    assignedAgentId: agent.id || item.assignedAgentId || item.assigned_agent_id || item.agentId || null,
+    assignedAgentName: agent.name || agent.fullName || item.assignedAgentName || item.assigned_agent_name || item.agentName || "",
+    assignedAgentEmail: agent.email || item.assignedAgentEmail || "",
+    assignedAt: item.assignedAt || item.assigned_at || null,
+    submittedAt: item.submittedAt || item.submitted_at || item.createdAt || item.created_at || null,
+    updatedAt: item.updatedAt || item.updated_at || item.createdAt || item.created_at || null,
+    filingType: "patent",
+    typeLabel: "PATENT FILING",
+    typeId: item.patentId || item.id || "",
+    typeIdLabel: "Patent ID",
+    fieldOfInvention: item.fieldOfInvention || item.field_of_invention || "",
+    abstractText: item.abstractText || item.abstract_text || item.abstract || "",
+    applicantName: item.applicantName || item.applicant_name || item.client?.name || "",
+    applicantEmail: item.applicantEmail || item.applicant_email || item.client?.email || "",
+    raw: item,
+  };
+}
+
+// GET /api/client/patent-filings
+export async function getClientPatentFilings({ status, search, page = 0, size = 20 } = {}) {
+  const params = new URLSearchParams({ page: String(page), size: String(size) });
+  if (status) params.set("status", status);
+  if (search) params.set("search", search);
+
+  const response = await apiRequest(`/api/client/patent-filings?${params.toString()}`, { method: "GET" });
+  if (!response.ok) {
+    return { ok: false, items: [], pagination: { page, size, totalElements: 0, totalPages: 0 }, status: response.status, data: response.data };
+  }
+
+  const raw = response.data?.data || response.data || {};
+  // Try multiple extraction paths for the items array
+  const content =
+    raw.content ||
+    raw.items ||
+    raw.patents ||
+    raw.filings ||
+    extractPatentArray(response.data) ||
+    [];
+  const list = (Array.isArray(content) ? content : []).map(normalizeClientPatentFiling);
+  const pageable = raw.pageable || {};
+  return {
+    ok: true,
+    items: list,
+    pagination: {
+      page: pageable.page ?? page,
+      size: pageable.size ?? size,
+      totalElements: pageable.totalElements ?? list.length,
+      totalPages: pageable.totalPages ?? (list.length > 0 ? 1 : 0),
+    },
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// GET /api/client/patent-filings/{id}
+export async function getClientPatentFilingById(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/patent-filings/${encodeURIComponent(filingId)}`, { method: "GET" });
+  return {
+    ok: response.ok,
+    filing: response.ok ? normalizeClientPatentFiling(response.data?.data || response.data || {}) : null,
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// DELETE /api/client/patent-filings/{id}
+export async function deleteClientPatentFiling(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/patent-filings/${encodeURIComponent(filingId)}`, { method: "DELETE" });
+  return { ok: response.ok, status: response.status, data: response.data };
+}
+
+// GET /api/client/patent-filings/{id}/payment
+export async function getClientPatentFilingPayment(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/patent-filings/${encodeURIComponent(filingId)}/payment`, { method: "GET" });
+  if (!response.ok) return { ok: false, status: response.status, data: response.data };
+  const raw = response.data?.data || response.data || {};
+  return {
+    ok: true,
+    payment: {
+      filingId: raw.filingId || filingId,
+      referenceNumber: raw.referenceNumber || "",
+      title: raw.title || "",
+      status: raw.status || "",
+      estimation: raw.estimation ?? null,
+      adminNote: raw.adminNote || "",
+      updatedAt: raw.updatedAt || null,
+    },
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// GET /api/client/patent-filings/{id}/agent
+export async function getClientPatentFilingAgent(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/patent-filings/${encodeURIComponent(filingId)}/agent`, { method: "GET" });
+  if (!response.ok) return { ok: false, status: response.status, data: response.data };
+  const raw = response.data?.data || response.data || {};
+  return {
+    ok: true,
+    assigned: raw.assigned ?? false,
+    assignedAt: raw.assignedAt || null,
+    agent: raw.agent || null,
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// ─── Client Non-Patent Filings ────────────────────────────────────────────────
+function normalizeClientNonPatentFiling(item = {}) {
+  const agent = item.agent || item.assignedAgent || {};
+  const type = item.filingType || item.type || "";
+  return {
+    id: item.id || item.filingId || item.trademarkId || item.copyrightId || item.designId || "",
+    referenceNumber: item.referenceNumber || item.referenceNo || item.reference_number || item.ref || "",
+    title: item.title || item.trademarkName || item.titleOfWork || item.articleName || item.name || "",
+    status: item.status || "",
+    filingType: type,
+    estimation: item.estimation ?? null,
+    adminNote: item.adminNote || item.admin_note || "",
+    assignedAgentId: agent.id || item.assignedAgentId || item.assigned_agent_id || item.agentId || null,
+    assignedAgentName: agent.name || agent.fullName || item.assignedAgentName || item.assigned_agent_name || item.agentName || "",
+    assignedAgentEmail: agent.email || item.assignedAgentEmail || "",
+    assignedAt: item.assignedAt || item.assigned_at || null,
+    submittedAt: item.submittedAt || item.submitted_at || item.createdAt || item.created_at || null,
+    updatedAt: item.updatedAt || item.updated_at || item.createdAt || item.created_at || null,
+    typeLabel: type ? `${type.toUpperCase()} FILING` : "NON-PATENT FILING",
+    raw: item,
+  };
+}
+
+// GET /api/client/non-patent-filings
+export async function getClientNonPatentFilingsList({ status, filingType, search, page = 0, size = 20 } = {}) {
+  const params = new URLSearchParams({ page: String(page), size: String(size) });
+  if (status) params.set("status", status);
+  if (filingType) params.set("filingType", filingType);
+  if (search) params.set("search", search);
+
+  const response = await apiRequest(`/api/client/non-patent-filings?${params.toString()}`, { method: "GET" });
+  if (!response.ok) {
+    return { ok: false, items: [], pagination: { page, size, totalElements: 0, totalPages: 0 }, status: response.status, data: response.data };
+  }
+
+  const raw = response.data?.data || response.data || {};
+  // Try multiple extraction paths for the items array
+  const content =
+    raw.content ||
+    raw.items ||
+    raw.filings ||
+    raw.nonPatentFilings ||
+    extractAdminArray(response.data) ||
+    [];
+  const list = (Array.isArray(content) ? content : []).map(normalizeClientNonPatentFiling);
+  const pageable = raw.pageable || {};
+  return {
+    ok: true,
+    items: list,
+    pagination: {
+      page: pageable.page ?? page,
+      size: pageable.size ?? size,
+      totalElements: pageable.totalElements ?? list.length,
+      totalPages: pageable.totalPages ?? (list.length > 0 ? 1 : 0),
+    },
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// GET /api/client/non-patent-filings/{id}
+export async function getClientNonPatentFilingByIdSpec(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/non-patent-filings/${encodeURIComponent(filingId)}`, { method: "GET" });
+  return {
+    ok: response.ok,
+    filing: response.ok ? normalizeClientNonPatentFiling(response.data?.data || response.data || {}) : null,
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// DELETE /api/client/non-patent-filings/{id}
+export async function deleteClientNonPatentFiling(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/non-patent-filings/${encodeURIComponent(filingId)}`, { method: "DELETE" });
+  return { ok: response.ok, status: response.status, data: response.data };
+}
+
+// GET /api/client/non-patent-filings/{id}/payment
+export async function getClientNonPatentFilingPayment(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/non-patent-filings/${encodeURIComponent(filingId)}/payment`, { method: "GET" });
+  if (!response.ok) return { ok: false, status: response.status, data: response.data };
+  const raw = response.data?.data || response.data || {};
+  return {
+    ok: true,
+    payment: {
+      filingId: raw.filingId || filingId,
+      referenceNumber: raw.referenceNumber || "",
+      title: raw.title || "",
+      status: raw.status || "",
+      estimation: raw.estimation ?? null,
+      adminNote: raw.adminNote || "",
+      updatedAt: raw.updatedAt || null,
+    },
+    status: response.status,
+    data: response.data,
+  };
+}
+
+// GET /api/client/non-patent-filings/{id}/agent
+export async function getClientNonPatentFilingAgent(id = "") {
+  const filingId = String(id || "").trim();
+  if (!filingId) return { ok: false, status: 400, data: { message: "Filing ID required." } };
+  const response = await apiRequest(`/api/client/non-patent-filings/${encodeURIComponent(filingId)}/agent`, { method: "GET" });
+  if (!response.ok) return { ok: false, status: response.status, data: response.data };
+  const raw = response.data?.data || response.data || {};
+  return {
+    ok: true,
+    assigned: raw.assigned ?? false,
+    assignedAt: raw.assignedAt || null,
+    agent: raw.agent || null,
+    status: response.status,
+    data: response.data,
+  };
+}
+
 // ─── Admin Profile (from localStorage) ────────────────────────────────────────
 export async function getAdminProfile() {
   const stored = getStoredUser();
