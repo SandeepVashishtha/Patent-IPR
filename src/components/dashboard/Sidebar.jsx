@@ -6,15 +6,17 @@ import { usePathname } from "next/navigation";
 const mainNav = [
   { label: "Dashboard", icon: "dashboard", href: "/dashboard" },
   { label: "My Cases", icon: "folder_open", href: "/dashboard/cases" },
+  { label: "Patent Filings", icon: "lightbulb", href: "/dashboard/patent-filings" },
+  { label: "Non-Patent Filings", icon: "description", href: "/dashboard/non-patent-filings" },
   { label: "Case Timeline", icon: "show_chart", href: "/dashboard/timeline" },
-  { label: "Documents", icon: "description", href: "/dashboard/documents" },
+  { label: "Documents", icon: "insert_drive_file", href: "/dashboard/documents" },
 ];
 
 const adminNav = [
   { label: "Cost Estimator", icon: "calculate", href: "/dashboard/cost-estimator" },
   { label: "Messages", icon: "mail", href: "/dashboard/messages" },
   { label: "Payments", icon: "payment", href: "/dashboard/payments" },
-  { label: "Profile", icon: "person", href: "/dashboard/profile" },
+  { label: "Profile", icon: "manage_accounts", href: "/dashboard/profile" },
 ];
 
 export default function Sidebar({ onClose }) {
