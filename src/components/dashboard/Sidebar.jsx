@@ -14,7 +14,6 @@ const mainNav = [
 
 const adminNav = [
   { label: "Cost Estimator", icon: "calculate", href: "/dashboard/cost-estimator" },
-  { label: "Messages", icon: "mail", href: "/dashboard/messages" },
   { label: "Payments", icon: "payment", href: "/dashboard/payments" },
   { label: "Profile", icon: "manage_accounts", href: "/dashboard/profile" },
 ];
