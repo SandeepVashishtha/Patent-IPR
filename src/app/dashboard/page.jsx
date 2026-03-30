@@ -214,13 +214,13 @@ export default function DashboardPage() {
       {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Legal Consultation CTA */}
-        <div className="bg-[#0d1b2a] rounded-xl p-6 text-white">
+        {/* <div className="bg-[#0d1b2a] rounded-xl p-6 text-white">
           <h3 className="text-lg font-bold mb-2">Need Legal Consultation?</h3>
           <p className="text-sm text-white/60 mb-4">Connect with our senior patent attorneys for strategic IP advice.</p>
-          <Link href="/dashboard/messages" className="inline-flex items-center gap-2 bg-[#e0eaf3] text-[#1a3d54] text-xs font-bold px-4 py-2.5 rounded-lg hover:bg-[#d2deea] transition-colors">
-            <span className="material-symbols-outlined text-sm">chat</span> Start Consultation
-          </Link>
-        </div>
+          <span className="inline-flex items-center gap-2 bg-[#c9d7e6] text-[#1a3d54] text-xs font-bold px-4 py-2.5 rounded-lg cursor-not-allowed opacity-80">
+            <span className="material-symbols-outlined text-sm">chat</span> Start Consultation (Coming Soon)
+          </span>
+        </div> */}
 
         {/* Upcoming Deadlines */}
         <div className="bg-white rounded-xl border border-gray-100 p-6">

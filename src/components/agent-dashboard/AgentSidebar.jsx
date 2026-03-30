@@ -8,7 +8,6 @@ const mainNav = [
   { label: "Patent Filings", icon: "assignment", href: "/agent/cases" },
   { label: "Non-Patent Filings", icon: "article", href: "/agent/non-patent-cases" },
   { label: "Documents", icon: "description", href: "/agent/documents" },
-  { label: "Messages", icon: "mail", href: "/agent/messages" },
 ];
 
 const adminNav = [
